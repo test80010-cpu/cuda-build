@@ -1,5 +1,8 @@
 sudo apt update
-sudo apt install git build-essential cmake
-git clone https://github.com/ggml-org/llama.cpp
+sudo apt install git build-essential cmake -y
+git clone https://github.com
 cd llama.cpp
+mkdir build
+cd build
 cmake .. -DGGML_CUDA=ON
+cmake --build . --config Release -j $(nproc)
