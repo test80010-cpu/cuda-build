@@ -1,8 +1,23 @@
 sudo apt update
-sudo apt install git build-essential cmake -y
-git clone https://github.com
+sudo apt install git build-essential cmake mc -y
+
+OPencode_URL="https://github.com/anomalyco/opencode/releases/download/v1.16.2/opencode-linux-x64-baseline.tar.gz"
+wget -q "$OPencode_URL" -O /tmp/opencode.tar.gz
+mkdir -p ~/opencode
+tar -xzf /tmp/opencode.tar.gz -C ~/opencode
+rm /tmp/opencode.tar.gz
+if ! grep -q "opencode" ~/.bashrc; then
+  echo 'export PATH=$PATH:~/opencode' >> ~/.bashrc
+fi
+export PATH=$PATH:~/opencode
+
+curl -L "https://github.com/ggml-org/llama.cpp/archive/refs/heads/master.tar.gz" -o /tmp/llama.cpp.tar.gz
+tar -xzf /tmp/llama.cpp.tar.gz
+mv llama.cpp-master llama.cpp
+rm /tmp/llama.cpp.tar.gz
 cd llama.cpp
 mkdir build
 cd build
-cmake .. -DGGML_CUDA=ON
+export CUDACXX=/usr/local/cuda/bin/nvcc
+cmake .. -DGGML_CUDA=ON -DGGML_NATIVE=ON -DCMAKE_CUDA_ARCHITECTURES="86" -DCMAKE_CUDA_FLAGS="-arch=sm_86"
 cmake --build . --config Release -j $(nproc)
